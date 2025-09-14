@@ -232,14 +232,7 @@ class APIClient {
     });
   }
 
-  // Payment planning endpoints
-  async getPaymentOptions(request: PaymentOptionsRequest): Promise<PaymentOptionsResponse> {
-    return this.request<PaymentOptionsResponse>('/payment/options', {
-      method: 'POST',
-      body: JSON.stringify(request),
-    });
-  }
-
+  
   // Financial aid endpoints
   async getAidEligibility(request: AidEligibilityRequest): Promise<AidEligibilityResponse> {
     return this.request<AidEligibilityResponse>('/aid/eligibility', {

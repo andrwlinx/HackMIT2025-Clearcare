@@ -5,8 +5,8 @@ import Link from 'next/link'
 import EstimateForm from '@/components/EstimateForm'
 import FacilityTable from '@/components/FacilityTable'
 import BreakdownCard from '@/components/BreakdownCard'
+import Navigation from '@/components/Navigation'
 import { useCostEstimate } from '@/hooks/useCostEstimate'
-import { usePaymentPlanner } from '@/hooks/usePaymentPlanner'
 import { useFinancialAid } from '@/hooks/useFinancialAid'
 import { apiClient } from '@/lib/api-client'
 
@@ -52,6 +52,30 @@ interface EstimateResult {
 
 type Step = 'form' | 'facilities' | 'estimate'
 
+const procedureNames = {
+  'knee-arthroscopy': 'Knee Arthroscopy',
+  'mri-scan': 'MRI Scan', 
+  'colonoscopy': 'Colonoscopy',
+  'ct-scan': 'CT Scan',
+  'emergency-room-visit': 'Emergency Room Visit'
+}
+
+const procedureCPTCodes = {
+  'knee-arthroscopy': '29881',
+  'mri-scan': '73721',
+  'colonoscopy': '45378', 
+  'ct-scan': '74150',
+  'emergency-room-visit': '99284'
+}
+
+const getProcedureName = (procedureCode: string) => {
+  return procedureNames[procedureCode as keyof typeof procedureNames] || procedureCode.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+}
+
+const getCPTCode = (procedureCode: string) => {
+  return procedureCPTCodes[procedureCode as keyof typeof procedureCPTCodes] || '00000'
+}
+
 export default function EstimatePage() {
   const [currentStep, setCurrentStep] = useState<Step>('form')
   const [formData, setFormData] = useState<EstimateFormData | null>(null)
@@ -63,7 +87,6 @@ export default function EstimatePage() {
 
   // Hook for integrated features
   const { data: costEstimate} = useCostEstimate()
-  const { data: paymentOptions} = usePaymentPlanner()
   const { data: aidEligibility } = useFinancialAid()
 
   const handleFormSubmit = async (data: EstimateFormData) => {
@@ -72,10 +95,10 @@ export default function EstimatePage() {
 
     try {
       const result = await apiClient.searchProviders({
-        query: data.surgery || 'knee arthroscopy',
+        query: data.surgery || 'knee-arthroscopy',
         zipCode: data.zip,
         radius: 25,
-        procedureCode: 'KNEE-ARTHROSCOPY'
+        procedureCode: getCPTCode(data.surgery || 'knee-arthroscopy')
       })
       
       // Transform the provider data to match the expected Facility interface
@@ -113,7 +136,7 @@ export default function EstimatePage() {
     try {
       // Get cost estimate from Cerebras backend
       const costResult = await apiClient.getCostEstimate({
-        procedureCode: 'KNEE-ARTHROSCOPY',
+        procedureCode: getCPTCode(formData.surgery || 'knee-arthroscopy'),
         hospitalId: facilityId,
         insurancePlan: {
           planType: formData.planType || 'ppo',
@@ -130,12 +153,6 @@ export default function EstimatePage() {
         }
       })
 
-      // Get payment options from Cerebras backend
-      const paymentResult = await apiClient.getPaymentOptions({
-        billAmount: costResult.estimate.insuranceCoverage?.estimatedPatientCost || costResult.estimate.totalCost,
-        income: 75000, // Default - would come from form
-        householdSize: 2 // Default - would come from form
-      })
 
       // Get financial aid eligibility from Cerebras backend
       const aidResult = await apiClient.getAidEligibility({
@@ -183,22 +200,22 @@ export default function EstimatePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="text-xl font-bold text-gray-900">
-                ClearCompass Demo
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/dashboard" className="text-gray-700 hover:text-gray-900">
-                Dashboard
-              </Link>
-            </div>
-          </div>
+      <Navigation />
+
+      {/* Header */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <h1 className="text-3xl font-bold text-gray-900">
+            {formData?.surgery ? getProcedureName(formData.surgery) : 'Healthcare Cost'} Estimate
+          </h1>
+          <p className="mt-2 text-gray-600">
+            {formData?.surgery 
+              ? `Get transparent pricing for ${getProcedureName(formData.surgery).toLowerCase()} procedures`
+              : 'Get transparent pricing for medical procedures'
+            }
+          </p>
         </div>
-      </nav>
+      </div>
 
       {/* Progress Indicator */}
       <div className="bg-white border-b">
@@ -299,6 +316,9 @@ export default function EstimatePage() {
               estimate={estimate}
               facility={selectedFacility}
               onBack={handleBack}
+              procedureCode={formData?.surgery}
+              procedureName={getProcedureName(formData?.surgery || 'knee-arthroscopy')}
+              cptCode={getCPTCode(formData?.surgery || 'knee-arthroscopy')}
             />
 
             {/* Payment Options */}

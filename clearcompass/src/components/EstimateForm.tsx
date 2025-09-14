@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { useForm, FieldErrors, UseFormRegister, UseFormHandleSubmit, UseFormSetValue, UseFormWatch } from 'react-hook-form'
 
 const InsuranceFormSchema = z.object({
-  surgery: z.string().min(1, 'Please select a surgery'),
+  surgery: z.string().min(1, 'Please select a procedure'),
   zip: z.string().min(5).max(5),
   deductibleMet: z.boolean(),
   outOfPocketSpent: z.number().min(0).max(50000),
@@ -155,14 +155,18 @@ export default function EstimateForm({ onSubmit, isLoading = false }: EstimateFo
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
-            Surgery Type
+            Procedure Type
           </label>
           <select
             {...register('surgery')}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
           >
-            <option value="">Select a surgery...</option>
+            <option value="">Select a procedure...</option>
             <option value="knee-arthroscopy">Knee Arthroscopy</option>
+            <option value="mri-scan">MRI Scan</option>
+            <option value="colonoscopy">Colonoscopy</option>
+            <option value="ct-scan">CT Scan</option>
+            <option value="emergency-room-visit">Emergency Room Visit</option>
           </select>
           {errors.surgery && (
             <p className="mt-1 text-sm text-red-600">{errors.surgery.message}</p>

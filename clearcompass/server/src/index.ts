@@ -30,39 +30,58 @@ app.post('/api/cost/estimate', async (req, res) => {
     
     // Use Cerebras for intelligent cost prediction
     const costPrediction = await cerebrasClient.predictHealthcareCost({
-      procedureCode: procedureCode || 'KNEE-ARTHROSCOPY',
+      procedureCode: procedureCode || '29881',
       hospitalId: hospitalId || 'bmc-001',
       insuranceType: insuranceType || 'Blue Cross Blue Shield PPO',
       patientAge,
       comorbidities
     });
 
+    // Add hospital-specific cost variations
+    const hospitalMultipliers = {
+      'bmc-001': 1.0,      // Boston Medical Center (baseline)
+      'mgh-001': 1.35,     // Mass General (premium)
+      'bwh-001': 1.28,     // Brigham and Women's (high-end)
+      'tufts-001': 1.15,   // Tufts Medical (mid-range)
+      'cambridge-001': 0.92 // Cambridge Health (community)
+    };
+
+    const hospitalMultiplier = hospitalMultipliers[hospitalId as keyof typeof hospitalMultipliers] || 1.0;
+    const adjustedCost = Math.round(costPrediction.estimatedCost * hospitalMultiplier);
+
     const estimate = {
-      totalCost: costPrediction.estimatedCost,
-      breakdown: costPrediction.breakdown,
+      totalCost: adjustedCost,
+      breakdown: {
+        facilityFee: Math.round(costPrediction.breakdown.facilityFee * hospitalMultiplier),
+        physicianFee: Math.round(costPrediction.breakdown.physicianFee * hospitalMultiplier),
+        anesthesiaFee: Math.round(costPrediction.breakdown.anesthesiaFee * hospitalMultiplier),
+        labFee: Math.round(costPrediction.breakdown.labFee * hospitalMultiplier),
+        imagingFee: Math.round(costPrediction.breakdown.imagingFee * hospitalMultiplier),
+        total: adjustedCost
+      },
       insuranceCoverage: {
         deductible: 1500,
         coinsurance: 0.2,
         copay: 50,
         outOfPocketMax: 6000,
-        estimatedPatientCost: Math.round(costPrediction.estimatedCost * 0.42) // Rough insurance calculation
+        estimatedPatientCost: Math.round(adjustedCost * 0.42) // Rough insurance calculation
       },
       confidence: costPrediction.confidence,
       methodology: costPrediction.methodology
     };
 
     const comparison = {
-      averagePrice: Math.round(costPrediction.estimatedCost * 1.1),
+      averagePrice: Math.round(adjustedCost * 1.1),
       priceRange: { 
-        min: Math.round(costPrediction.estimatedCost * 0.8), 
-        max: Math.round(costPrediction.estimatedCost * 1.3) 
+        min: Math.round(adjustedCost * 0.8), 
+        max: Math.round(adjustedCost * 1.3) 
       },
       percentile: Math.round((1 - costPrediction.confidence) * 100),
       nearbyFacilities: []
     };
 
     const procedure = {
-      code: procedureCode || 'KNEE-ARTHROSCOPY',
+      code: procedureCode || '29881',
       description: 'Knee Arthroscopy',
       category: 'Orthopedic Surgery'
     };

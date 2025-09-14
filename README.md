@@ -7,7 +7,6 @@ A simple healthcare cost transparency tool that helps patients understand medica
 Medical bills are confusing and expensive. ClearCompass shows you:
 - How much procedures actually cost at different hospitals
 - What you'll pay after insurance
-- Potential payment plans
 - Financial aid programs you might qualify for
 
 ## How it works
@@ -20,8 +19,7 @@ We have three parts:
 
 ## Getting started
 
-Need Node.js and Python installed.
-Need Cerebras API key.
+Need Node.js and Cerebras API key.
 
 ```bash
 git clone <this-repo>
@@ -40,6 +38,15 @@ npm run dev
 
 Website: http://localhost:3000
 Backend: http://localhost:3001
+
+## Features
+
+- **Multiple procedure types**: Knee Arthroscopy, MRI Scan, Colonoscopy, CT Scan, Emergency Room Visit
+- **Hospital-specific pricing**: Costs vary realistically between different hospitals
+- **Dynamic cost estimates**: Powered by Cerebras AI with procedure-specific calculations
+- **Real CPT codes**: Uses actual medical billing codes (29881, 73721, 45378, etc.)
+- **Insurance integration**: Calculates your actual out-of-pocket costs
+- **Financial aid matching**: AI-powered program recommendations
 
 ## The problem we're solving
 
@@ -64,6 +71,7 @@ Hospital pricing is a mess:
 - Analyze your financial situation 
 - Match you with relevant aid programs
 - Explain everything in plain English
+- Provide procedure-specific cost breakdowns
 
 ## Environment setup
 

@@ -28,9 +28,12 @@ interface BreakdownCardProps {
   estimate: EstimateResult
   facility: Facility
   onBack: () => void
+  procedureCode?: string
+  procedureName?: string
+  cptCode?: string
 }
 
-export default function BreakdownCard({ estimate, facility, onBack }: BreakdownCardProps) {
+export default function BreakdownCard({ estimate, facility, onBack, procedureCode, procedureName, cptCode }: BreakdownCardProps) {
   const renderStars = (score: number) => {
     const fullStars = Math.floor(score)
     const hasHalfStar = score % 1 >= 0.5
@@ -63,9 +66,9 @@ export default function BreakdownCard({ estimate, facility, onBack }: BreakdownC
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">
-              Cost Estimate for Knee Arthroscopy
+              Cost Estimate for {procedureName || 'Knee Arthroscopy'}
             </h2>
-            <p className="text-sm text-gray-600 mt-1">CPT Code: 29881</p>
+            <p className="text-sm text-gray-600 mt-1">CPT Code: {cptCode || '29881'}</p>
           </div>
           <button
             onClick={onBack}

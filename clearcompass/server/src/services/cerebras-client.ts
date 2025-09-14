@@ -248,20 +248,45 @@ export class CerebrasClient {
   }
 
   private buildCostPredictionPrompt(input: CostPredictionInput): string {
-    return `Predict healthcare costs for this procedure:
-    
-    Procedure Code: ${input.procedureCode}
-    Hospital ID: ${input.hospitalId}
-    Insurance Type: ${input.insuranceType}
+    const procedureNames = {
+      'knee-arthroscopy': 'Knee Arthroscopy',
+      'mri-scan': 'MRI Scan',
+      'colonoscopy': 'Colonoscopy',
+      'ct-scan': 'CT Scan',
+      'emergency-room-visit': 'Emergency Room Visit'
+    };
+
+    const procedureName = procedureNames[input.procedureCode as keyof typeof procedureNames] || input.procedureCode;
+
+    return `Predict healthcare costs for: ${procedureName}
+
+    Procedure: ${procedureName}
+    Hospital: ${input.hospitalId}
+    Insurance: ${input.insuranceType}
     Patient Age: ${input.patientAge || 'Not specified'}
-    Comorbidities: ${input.comorbidities?.join(', ') || 'None specified'}
     
-    Based on Hospital Price Transparency v3 data patterns, provide a cost estimate with:
-    - Total estimated cost
-    - Confidence level (0-1)
-    - Detailed breakdown (facility, physician, anesthesia, lab, imaging fees)
+    Based on Hospital Price Transparency v3 data and typical pricing patterns, provide a cost estimate.
     
-    Return as JSON: { "estimatedCost": number, "confidence": number, "breakdown": { "facilityFee": number, "physicianFee": number, "anesthesiaFee": number, "labFee": number, "imagingFee": number } }`;
+    Consider these procedure-specific factors:
+    - Knee Arthroscopy: Outpatient surgery, facility + surgeon + anesthesia fees
+    - MRI Scan: Diagnostic imaging, facility fee + radiologist interpretation
+    - Colonoscopy: Screening procedure, facility + gastroenterologist + sedation
+    - CT Scan: Diagnostic imaging, facility fee + contrast (if needed) + radiologist
+    - Emergency Room Visit: Triage + physician + facility fees, varies by complexity
+    
+    Return JSON format:
+    {
+      "estimatedCost": number,
+      "confidence": number (0-1),
+      "breakdown": {
+        "facilityFee": number,
+        "physicianFee": number,
+        "anesthesiaFee": number,
+        "labFee": number,
+        "imagingFee": number
+      },
+      "methodology": "Brief explanation of calculation approach"
+    }`;
   }
 
   private buildExplanationPrompt(type: string, data: any, question?: string): string {
