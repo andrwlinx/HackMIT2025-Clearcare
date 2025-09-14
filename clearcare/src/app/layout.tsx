@@ -14,8 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ClearCompass - Healthcare Cost Transparency",
+  title: "ClearCare - Healthcare Cost Transparency",
   description: "Know your healthcare costs before you decide. Compare facilities, find financial assistance, and plan your payment options.",
+  icons: {
+    icon: '/clearcarelogo.png',
+    shortcut: '/clearcarelogo.png',
+    apple: '/clearcarelogo.png',
+  },
 };
 
 export default function RootLayout({

@@ -10,7 +10,15 @@ export default function Navigation() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-              <Compass className="h-8 w-8 text-blue-400" />
+              <img 
+                src="/clearcarelogo.png" 
+                alt="ClearCare Logo" 
+                className="h-8 w-8 object-contain rounded-sm"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  console.error('Failed to load logo image');
+                }}
+              />
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
                 ClearCare
               </h1>
