@@ -1,0 +1,242 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  role         String   @default("user") // user, admin
+  email        String   @unique
+  name         String?
+  zip          String?
+  dobHash      String?  // Hashed date of birth for privacy
+  createdAt    DateTime @default(now())
+  
+  estimates        Estimate[]
+  eligibilityChecks EligibilityCheck[]
+  crowdfundLinks   CrowdfundLink[]
+  auditLogs        AuditLog[]
+  
+  @@map("users")
+}
+
+model InsurancePlan {
+  id            String   @id @default(cuid())
+  issuer        String
+  planType      String   // PPO, HMO, HDHP, etc.
+  network       String
+  deductible    Float
+  oopMax        Float    // Out-of-pocket maximum
+  coinsurance   Float    // e.g., 0.20 for 20%
+  copayPcp      Float?   // Primary care copay
+  copaySpecialist Float? // Specialist copay
+  copayEr       Float?   // Emergency room copay
+  effectiveStart DateTime
+  effectiveEnd   DateTime?
+  
+  coverageRules CoverageRule[]
+  estimates     Estimate[]
+  
+  @@map("insurance_plans")
+}
+
+model CoverageRule {
+  id          String  @id @default(cuid())
+  planId      String
+  cptCode     String  @default("29881") // Knee arthroscopy
+  inNetwork   Boolean
+  coinsurance Float?  // Override plan default
+  copay       Float?  // Override plan default
+  priorAuth   Boolean @default(false)
+  
+  plan InsurancePlan @relation(fields: [planId], references: [id])
+  
+  @@map("coverage_rules")
+}
+
+model Facility {
+  id              String  @id @default(cuid())
+  name            String
+  npi             String? // National Provider Identifier
+  address         String
+  lat             Float
+  lng             Float
+  networkTags     String   // JSON array of network names
+  qualityScore    Float   // Overall 1-5 star rating
+  readmitRate     Float?  // Readmission rate
+  hcahpsScore     Float?  // Patient satisfaction score
+  complicationRate Float? // Complication rate
+  
+  negotiatedRates NegotiatedRate[]
+  estimates       Estimate[]
+  paymentPlans    PaymentPlan[]
+  
+  @@map("facilities")
+}
+
+model Procedure {
+  id                String   @id @default(cuid())
+  cptCode           String   @unique @default("29881") // Knee arthroscopy
+  description       String   @default("Arthroscopy, knee, surgical; with meniscectomy")
+  bundleComponents  String   // JSON array of additional CPT codes typically bundled
+  typicalFollowUps  String   // JSON array of follow-up procedure codes
+  
+  estimates Estimate[]
+  
+  @@map("procedures")
+}
+
+model NegotiatedRate {
+  id           String    @id @default(cuid())
+  facilityId   String
+  cptCode      String    @default("29881") // Knee arthroscopy
+  cashPrice    Float
+  minAllowed   Float
+  maxAllowed   Float
+  payerAllowed Float?
+  lastSeenAt   DateTime  @default(now())
+  
+  facility Facility @relation(fields: [facilityId], references: [id])
+  
+  @@map("negotiated_rates")
+}
+
+model Medication {
+  id      String  @id @default(cuid())
+  ndc     String  @unique
+  name    String
+  generic Boolean @default(true)
+  
+  drugPrices DrugPrice[]
+  
+  @@map("medications")
+}
+
+model DrugPrice {
+  id              String   @id @default(cuid())
+  ndc             String
+  pharmacyZip     String
+  cashPrice       Float
+  discountOptions String   // JSON array of discount program names
+  
+  medication Medication @relation(fields: [ndc], references: [ndc])
+  
+  @@map("drug_prices")
+}
+
+model Estimate {
+  id          String   @id @default(cuid())
+  userId      String
+  planId      String?
+  procedureId String   @default("knee-arthroscopy")
+  facilityId  String?
+  
+  // Input parameters
+  deductibleMet   Boolean
+  oopYTD          Float   // Out-of-pocket year-to-date
+  distance        Float?  // Distance to facility in miles
+  anesthesiaTime  Int?    // Minutes of anesthesia
+  asaClass        String? // ASA physical status classification
+  
+  // Cost breakdown
+  facilityFee   Float
+  physicianFee  Float
+  anesthesiaFee Float   @default(0)
+  medicationFee Float   @default(0)
+  rehabFee      Float   @default(0)
+  
+  // Cost range
+  lowEstimate  Float
+  midEstimate  Float
+  highEstimate Float
+  
+  // Metadata
+  confidence  Float    @default(0.8) // 0-1 confidence score
+  assumptions String   // JSON array of assumption strings
+  createdAt   DateTime @default(now())
+  
+  user      User         @relation(fields: [userId], references: [id])
+  plan      InsurancePlan? @relation(fields: [planId], references: [id])
+  procedure Procedure    @relation(fields: [procedureId], references: [id])
+  facility  Facility?    @relation(fields: [facilityId], references: [id])
+  
+  @@map("estimates")
+}
+
+model AidProgram {
+  id                 String   @id @default(cuid())
+  name               String
+  type               String   // hospital, nonprofit, government
+  incomePctFPL       Float?   // Income as % of Federal Poverty Level
+  residencyRequired  String?  // State/region requirement
+  diagnosisRequired  String?  // Specific diagnosis requirement
+  insuranceStatus    String?  // uninsured, underinsured, any
+  documentsRequired  String   // JSON array of required documents
+  applicationUrl     String?
+  description        String?
+  
+  eligibilityChecks EligibilityCheck[]
+  
+  @@map("aid_programs")
+}
+
+model EligibilityCheck {
+  id        String   @id @default(cuid())
+  userId    String
+  programId String
+  status    String   // eligible, ineligible, needs_review
+  reasons   String   // JSON array of eligibility reasons
+  createdAt DateTime @default(now())
+  
+  user    User       @relation(fields: [userId], references: [id])
+  program AidProgram @relation(fields: [programId], references: [id])
+  
+  @@map("eligibility_checks")
+}
+
+model PaymentPlan {
+  id              String  @id @default(cuid())
+  facilityId      String?
+  name            String
+  months          Int
+  apr             Float   // Annual percentage rate
+  fees            Float   @default(0)
+  eligibilityNotes String?
+  
+  facility Facility? @relation(fields: [facilityId], references: [id])
+  
+  @@map("payment_plans")
+}
+
+model CrowdfundLink {
+  id         String   @id @default(cuid())
+  userId     String
+  provider   String   // gofundme, kickstarter, etc.
+  url        String
+  visibility String   @default("private") // private, link, public
+  createdAt  DateTime @default(now())
+  
+  user User @relation(fields: [userId], references: [id])
+  
+  @@map("crowdfund_links")
+}
+
+model AuditLog {
+  id     String   @id @default(cuid())
+  userId String?
+  action String
+  meta   Json?    // Additional metadata
+  ipHash String?  // Hashed IP address
+  at     DateTime @default(now())
+  
+  user User? @relation(fields: [userId], references: [id])
+  
+  @@map("audit_logs")
+}
