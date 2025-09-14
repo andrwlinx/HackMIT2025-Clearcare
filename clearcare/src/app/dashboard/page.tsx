@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Compass } from 'lucide-react'
 import { formatCurrency } from '@/lib/estimate'
+import Navigation from '@/components/Navigation'
 
 interface SavedEstimate {
   id: string
@@ -83,29 +84,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Navigation */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <Link href="/" className="flex items-center space-x-2 text-xl font-bold text-gray-900">
-                <Compass className="h-6 w-6 text-blue-600" />
-                <span>ClearCompass Demo</span>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/" className="text-gray-700 hover:text-gray-900">
-                Home
-              </Link>
-              <Link href="/estimate" className="text-gray-700 hover:text-gray-900">
-                Get Estimate
-              </Link>
-              <Link href="/compare" className="text-gray-700 hover:text-gray-900">
-                Compare
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navigation />
 
       {/* Header */}
       <div className="bg-white border-b">

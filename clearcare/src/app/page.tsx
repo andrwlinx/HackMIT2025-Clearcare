@@ -27,7 +27,7 @@ export default function Home() {
               Get My Estimate
             </Link>
             <Link
-              href="/compare"
+              href="/dashboard"
               className="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-blue-600 bg-white border-2 border-blue-200 rounded-xl hover:border-blue-300 hover:bg-blue-50 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <span className="mr-2">🏥</span>

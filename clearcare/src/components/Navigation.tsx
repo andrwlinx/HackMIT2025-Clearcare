@@ -12,7 +12,7 @@ export default function Navigation() {
             <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
               <Compass className="h-8 w-8 text-blue-400" />
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
-                ClearCompass
+                ClearCare
               </h1>
             </Link>
           </div>

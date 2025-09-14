@@ -1,10 +1,10 @@
-# ClearCompass
+# ClearCare
 
 A simple healthcare cost transparency tool that helps patients understand medical pricing before they get care.
 
 ## What it does
 
-Medical bills are confusing and expensive. ClearCompass shows you:
+Medical bills are confusing and expensive. ClearCare shows you:
 - How much procedures actually cost at different hospitals
 - What you'll pay after insurance
 - Financial aid programs you might qualify for
@@ -26,12 +26,12 @@ git clone <this-repo>
 cd hackmitreal
 
 # Start the website
-cd clearcompass
+cd clearcare
 npm install
 npm run dev
 
 # Start the backend (new terminal)
-cd clearcompass/server  
+cd clearcare/server  
 npm install
 npm run dev
 ```
@@ -75,7 +75,7 @@ Hospital pricing is a mess:
 
 ## Environment setup
 
-Backend needs a `.env` file in `clearcompass/server/`:
+Backend needs a `.env` file in  `clearcare/server/`:
 
 ```env
 PORT=3001
@@ -87,7 +87,7 @@ FRONTEND_URL=http://localhost:3000
 CEREBRAS_API_KEY=your_cerebras_api_key_here
 ```
 
-Frontend needs `.env.local` in `clearcompass/`:
+Frontend needs `.env.local` in `clearcare/`:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
@@ -96,7 +96,7 @@ NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
 ## File structure
 
 ```
-clearcompass/
+clearcare/
 ├── src/app/              # React pages and components
 ├── server/               # Node.js backend
 │   ├── src/services/     # Business logic and AI
