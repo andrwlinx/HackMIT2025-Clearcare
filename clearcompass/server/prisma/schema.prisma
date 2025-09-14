@@ -1,0 +1,208 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Hospital {
+  id          String   @id @default(cuid())
+  hospitalId  String   @unique // Original hospital ID from HPT data
+  name        String
+  city        String
+  state       String
+  zipCode     String?
+  lat         Float?
+  lon         Float?
+  address     String?
+  phoneNumber String?
+  website     String?
+  
+  // Quality metrics
+  qualityScore     Float?
+  readmitRate      Float?
+  hcahpsScore      Float?
+  complicationRate Float?
+  
+  // System metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  prices        Price[]
+  predictions   PricePrediction[]
+  priceSummaries PriceSummary[]
+  
+  @@map("hospitals")
+}
+
+model Price {
+  id          String   @id @default(cuid())
+  hospitalId  String
+  hospital    Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  
+  // Procedure information
+  codeType    String   // 'CPT', 'HCPCS', 'DRG', etc.
+  code        String   // The actual procedure code
+  description String?
+  
+  // Pricing information
+  payer       String?  // Insurance payer name, null for cash
+  rateType    String   // 'negotiated', 'cash', 'min', 'max'
+  price       Float
+  
+  // Metadata
+  updatedAt   DateTime @default(now())
+  sourceFile  String?  // Original HPT file reference
+  
+  @@unique([hospitalId, codeType, code, payer, rateType])
+  @@index([codeType, code])
+  @@index([hospitalId])
+  @@index([payer])
+  @@map("prices")
+}
+
+// Materialized view for quick price lookups
+model PriceSummary {
+  id           String  @id @default(cuid())
+  hospitalId   String
+  hospital     Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  
+  codeType     String
+  code         String
+  description  String?
+  
+  cashPrice    Float?
+  minNegotiated Float?
+  maxNegotiated Float?
+  avgNegotiated Float?
+  
+  updatedAt    DateTime @default(now())
+  
+  @@unique([hospitalId, codeType, code])
+  @@index([codeType, code])
+  @@map("price_summaries")
+}
+
+model PricePrediction {
+  id          String   @id @default(cuid())
+  hospitalId  String
+  hospital    Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  
+  codeType    String
+  code        String
+  payer       String?
+  
+  // Prediction results
+  predictedPrice Float
+  confidence     Float   // 0-1 confidence score
+  p10           Float?   // 10th percentile
+  p50           Float    // 50th percentile (median)
+  p90           Float?   // 90th percentile
+  
+  // Model metadata
+  modelVersion  String
+  features      Json     // Features used for prediction
+  createdAt     DateTime @default(now())
+  
+  @@unique([hospitalId, codeType, code, payer, modelVersion])
+  @@index([codeType, code])
+  @@map("price_predictions")
+}
+
+model InsurancePlan {
+  id           String @id @default(cuid())
+  payerName    String
+  planName     String
+  planType     String // 'PPO', 'HMO', 'EPO', 'POS', 'HDHP'
+  
+  // Default plan parameters
+  deductible   Float?
+  oopMax       Float?
+  coinsurance  Float?
+  copay        Float?
+  
+  // Network information
+  networkName  String?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  @@unique([payerName, planName])
+  @@map("insurance_plans")
+}
+
+model AidProgram {
+  id                String   @id @default(cuid())
+  name              String
+  type              String   // 'hospital', 'government', 'nonprofit'
+  description       String?
+  
+  // Eligibility criteria
+  incomePctFPL      Float?   // Income as % of Federal Poverty Level
+  insuranceStatus   String?  // 'uninsured', 'underinsured', 'insured', 'any'
+  residencyRequired String?  // State or region requirement
+  
+  // Program details
+  coverage          String?  // What the program covers
+  applicationUrl    String?
+  contactInfo       String?
+  requirements      String[] // Array of requirements
+  
+  // Metadata
+  priority          String   @default("Medium") // 'High', 'Medium', 'Low'
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@map("aid_programs")
+}
+
+model ModelMetadata {
+  id              String   @id @default(cuid())
+  modelType       String   // 'price_prediction', 'aid_matching'
+  version         String
+  
+  // Training information
+  trainingDate    DateTime
+  datasetSize     Int
+  features        String[] // List of features used
+  
+  // Performance metrics
+  mae             Float?   // Mean Absolute Error
+  rmse            Float?   // Root Mean Square Error
+  r2Score         Float?   // R-squared score
+  
+  // Model artifacts
+  modelPath       String?  // Path to saved model
+  configJson      Json?    // Model configuration
+  
+  active          Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  
+  @@unique([modelType, version])
+  @@map("model_metadata")
+}
+
+// Audit log for tracking data updates
+model DataUpdateLog {
+  id          String   @id @default(cuid())
+  operation   String   // 'ingest', 'update', 'delete'
+  entityType  String   // 'hospital', 'price', 'prediction'
+  entityId    String?
+  
+  recordsAffected Int?
+  sourceFile      String?
+  errorMessage    String?
+  
+  createdAt   DateTime @default(now())
+  
+  @@index([operation, entityType])
+  @@index([createdAt])
+  @@map("data_update_logs")
+}

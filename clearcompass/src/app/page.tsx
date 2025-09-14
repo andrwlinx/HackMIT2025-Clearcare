@@ -23,9 +23,6 @@ export default function Home() {
               <Link href="/aid" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
                 Find Aid
               </Link>
-              <Link href="/payment-planner" className="text-gray-700 hover:text-blue-600 font-medium transition-colors">
-                Payment Planner
-              </Link>
               <Link href="/dashboard" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
                 Dashboard
               </Link>
