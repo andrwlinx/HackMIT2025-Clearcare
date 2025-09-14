@@ -24,7 +24,6 @@ Need Node.js and Cerebras API key.
 ```bash
 git clone <this-repo>
 cd hackmitreal
-git checkout model
 
 # Start the website
 cd clearcare
