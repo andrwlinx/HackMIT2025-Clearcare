@@ -1,4 +1,4 @@
-# KneeCost Demo - Healthcare Cost Transparency Platform
+# Demo - Healthcare Cost Transparency Platform
 
 A focused healthcare cost estimation demo for knee arthroscopy (CPT 29881) procedures. This application demonstrates transparent pricing, facility comparison, and cost estimation workflows.
 
@@ -29,7 +29,7 @@ A focused healthcare cost estimation demo for knee arthroscopy (CPT 29881) proce
 
 1. **Clone and install dependencies:**
 ```bash
-cd knee-cost-demo
+cd carestitch
 npm install
 ```
 

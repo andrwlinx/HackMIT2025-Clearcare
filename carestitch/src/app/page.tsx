@@ -42,11 +42,11 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 sm:text-5xl md:text-6xl">
-            Check your knee arthroscopy costs
+            Check your healthcare costs
             <span className="text-blue-600"> before you decide</span>
           </h1>
           <p className="mt-6 max-w-2xl mx-auto text-lg text-gray-600 leading-relaxed">
-            Get transparent cost estimates for knee arthroscopy (CPT 29881) at different facilities near you. 
+            Get transparent cost estimates for healthcare operations at different facilities near you. 
             Compare prices, quality ratings, and find financial assistance programs.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">

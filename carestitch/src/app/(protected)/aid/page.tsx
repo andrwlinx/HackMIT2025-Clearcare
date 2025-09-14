@@ -143,7 +143,7 @@ export default function AidFinderPage() {
             Financial Assistance Finder
           </h1>
           <p className="mt-2 text-gray-600">
-            Find programs that can help reduce your knee arthroscopy costs
+            Find programs that can help reduce your healthcare costs
           </p>
         </div>
       </div>

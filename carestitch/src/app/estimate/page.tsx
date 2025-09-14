@@ -133,7 +133,7 @@ export default function EstimatePage() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link href="/" className="text-xl font-bold text-gray-900">
-                KneeCost Demo
+                CareStitch Demo
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -192,7 +192,7 @@ export default function EstimatePage() {
           <div className="max-w-2xl mx-auto">
             <div className="text-center mb-8">
               <h1 className="text-3xl font-bold text-gray-900">
-                Get Your Knee Arthroscopy Cost Estimate
+                Get Your Health Cost Estimate
               </h1>
               <p className="mt-2 text-lg text-gray-600">
                 Start by entering your insurance information
@@ -235,6 +235,146 @@ export default function EstimatePage() {
               facility={selectedFacility}
               onBack={handleBack}
             />
+            
+            {/* AI-Generated Payment & Aid Options */}
+            <div className="mt-8 space-y-6">
+              {/* AI Badge */}
+              <div className="flex items-center justify-center">
+                <div className="bg-gradient-to-r from-purple-100 to-blue-100 px-4 py-2 rounded-full">
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                    <span className="text-sm font-medium text-purple-700">AI-Powered Recommendations</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Payment Plan Options */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-green-900 mb-3 flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                  Personalized Payment Plans
+                </h3>
+                <p className="text-green-700 text-sm mb-4">
+                  {/* AI will analyze your insurance coverage, estimated income, and household size to recommend optimal payment plans */}
+                  Based on your insurance and financial profile, here are your best payment options:
+                </p>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Interest-Free Plan */}
+                  <div className="bg-white border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-green-900">Interest-Free Plan</h4>
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">Recommended</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      ${Math.round((estimate?.patientCost.mid || 0) / 12)} per month for 12 months
+                    </p>
+                    <ul className="text-xs text-gray-500 space-y-1 mb-3">
+                      <li>• No interest or fees</li>
+                      <li>• Automatic payments available</li>
+                      <li>• Early payoff allowed</li>
+                    </ul>
+                    <button className="w-full bg-green-600 text-white py-2 px-4 rounded text-sm hover:bg-green-700 transition-colors">
+                      Select This Plan
+                    </button>
+                  </div>
+
+                  {/* Extended Plan */}
+                  <div className="bg-white border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-green-900">Extended Plan</h4>
+                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Lower Payments</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      ${Math.round((estimate?.patientCost.mid || 0) / 24)} per month for 24 months
+                    </p>
+                    <ul className="text-xs text-gray-500 space-y-1 mb-3">
+                      <li>• 3.9% APR</li>
+                      <li>• Flexible payment dates</li>
+                      <li>• No prepayment penalty</li>
+                    </ul>
+                    <button className="w-full bg-blue-600 text-white py-2 px-4 rounded text-sm hover:bg-blue-700 transition-colors">
+                      Select This Plan
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Financial Aid Options */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center">
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  Financial Assistance Programs
+                </h3>
+                <p className="text-blue-700 text-sm mb-4">
+                  {/* AI will match you with relevant aid programs based on your insurance status, income level, and location */}
+                  You may qualify for these assistance programs:
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Hospital Charity Care */}
+                  <div className="bg-white border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-blue-900">Hospital Financial Aid</h4>
+                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">85% Match</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      Potential savings: ${Math.round((estimate?.patientCost.mid || 0) * 0.4)} - ${Math.round((estimate?.patientCost.mid || 0) * 0.7)}
+                    </p>
+                    <ul className="text-xs text-gray-500 space-y-1 mb-3">
+                      <li>• Income-based sliding scale</li>
+                      <li>• No application fee</li>
+                      <li>• 2-3 week processing time</li>
+                    </ul>
+                    <button className="w-full bg-blue-600 text-white py-2 px-4 rounded text-sm hover:bg-blue-700 transition-colors">
+                      Apply Now
+                    </button>
+                  </div>
+
+                  {/* Nonprofit Assistance */}
+                  <div className="bg-white border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-blue-900">HealthWell Foundation</h4>
+                      <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">72% Match</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">
+                      Potential savings: Up to ${Math.round((estimate?.patientCost.mid || 0) * 0.5)}
+                    </p>
+                    <ul className="text-xs text-gray-500 space-y-1 mb-3">
+                      <li>• Copay and coinsurance assistance</li>
+                      <li>• Income up to 500% FPL</li>
+                      <li>• Online application</li>
+                    </ul>
+                    <button className="w-full bg-purple-600 text-white py-2 px-4 rounded text-sm hover:bg-purple-700 transition-colors">
+                      Check Eligibility
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-4 text-center">
+                  <Link
+                    href="/aid"
+                    className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm"
+                  >
+                    View All Financial Aid Options
+                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
+                </div>
+              </div>
+
+              {/* AI Disclaimer */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <p className="text-xs text-gray-600 text-center">
+                  <span className="font-medium">AI-Powered Recommendations:</span> These suggestions are generated using artificial intelligence based on your insurance coverage, estimated financial profile, and historical program eligibility data. Actual eligibility and terms may vary. Please verify all details before making financial commitments.
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </div>

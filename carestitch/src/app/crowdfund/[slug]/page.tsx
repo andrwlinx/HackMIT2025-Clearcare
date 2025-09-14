@@ -1,5 +1,4 @@
 import { notFound } from 'next/navigation'
-import { prisma } from '@/lib/prisma'
 import { formatCurrency } from '@/lib/estimate'
 import Link from 'next/link'
 
@@ -9,20 +8,52 @@ interface CrowdfundPageProps {
   }
 }
 
-export default async function CrowdfundPage({ params }: CrowdfundPageProps) {
-  const crowdfundLink = await prisma.crowdfundLink.findFirst({
-    where: {
-      slug: params.slug,
-      isActive: true
-    },
-    include: {
-      estimate: {
-        include: {
-          facility: true
-        }
+// Mock crowdfund data for demo
+const MOCK_CROWDFUND_DATA: Record<string, any> = {
+  'john-doe-knee-surgery': {
+    id: '1',
+    slug: 'john-doe-knee-surgery',
+    title: 'Help John with Knee Surgery Costs',
+    patientName: 'John Doe',
+    description: 'I need help covering the costs of my upcoming knee arthroscopy. After insurance, I still face significant out-of-pocket expenses that are putting financial strain on my family. Any support would be greatly appreciated.',
+    targetAmount: 4500,
+    currentAmount: 1250,
+    isActive: true,
+    createdAt: new Date('2024-01-15'),
+    estimate: {
+      patientCostLow: 3800,
+      patientCostHigh: 5200,
+      facility: {
+        name: 'Boston Medical Center',
+        city: 'Boston',
+        state: 'MA'
       }
     }
-  })
+  },
+  'demo-campaign': {
+    id: '2', 
+    slug: 'demo-campaign',
+    title: 'Medical Expense Support',
+    patientName: 'Demo Patient',
+    description: 'This is a demonstration crowdfunding campaign showing how patients can raise funds for medical expenses through the CareStitch platform.',
+    targetAmount: 3000,
+    currentAmount: 750,
+    isActive: true,
+    createdAt: new Date('2024-01-20'),
+    estimate: {
+      patientCostLow: 2500,
+      patientCostHigh: 3500,
+      facility: {
+        name: 'Massachusetts General Hospital',
+        city: 'Boston',
+        state: 'MA'
+      }
+    }
+  }
+}
+
+export default async function CrowdfundPage({ params }: CrowdfundPageProps) {
+  const crowdfundLink = MOCK_CROWDFUND_DATA[params.slug]
 
   if (!crowdfundLink) {
     notFound()
@@ -174,20 +205,18 @@ export default async function CrowdfundPage({ params }: CrowdfundPageProps) {
                 <p className="text-gray-600">Knee Arthroscopy (CPT 29881)</p>
               </div>
               
-              {crowdfundLink.estimate?.facility && (
-                <div>
-                  <h3 className="font-medium text-gray-900">Facility</h3>
-                  <p className="text-gray-600">{crowdfundLink.estimate.facility.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {crowdfundLink.estimate.facility.city}, {crowdfundLink.estimate.facility.state}
-                  </p>
-                </div>
-              )}
+              <div>
+                <h3 className="font-medium text-gray-900">Facility</h3>
+                <p className="text-gray-600">{crowdfundLink.estimate.facility.name}</p>
+                <p className="text-sm text-gray-500">
+                  {crowdfundLink.estimate.facility.city}, {crowdfundLink.estimate.facility.state}
+                </p>
+              </div>
               
               <div>
                 <h3 className="font-medium text-gray-900">Estimated Cost</h3>
                 <p className="text-gray-600">
-                  {formatCurrency(crowdfundLink.estimate?.patientCostLow || 0)} - {formatCurrency(crowdfundLink.estimate?.patientCostHigh || 0)}
+                  {formatCurrency(crowdfundLink.estimate.patientCostLow)} - {formatCurrency(crowdfundLink.estimate.patientCostHigh)}
                 </p>
                 <p className="text-sm text-gray-500">
                   After insurance and out-of-pocket expenses

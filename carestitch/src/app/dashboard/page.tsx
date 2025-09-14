@@ -87,7 +87,7 @@ export default function DashboardPage() {
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <Link href="/" className="text-xl font-bold text-gray-900">
-                KneeCost Demo
+                CareStitch Demo
               </Link>
             </div>
             <div className="flex items-center space-x-4">

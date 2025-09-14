@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "CareStitch - Healthcare Cost Transparency",
-  description: "Know your knee arthroscopy costs before you decide. Compare facilities, find financial assistance, and plan your payment options.",
+  description: "Know your healthcare costs before you decide. Compare facilities, find financial assistance, and plan your payment options.",
 };
 
 export default function RootLayout({

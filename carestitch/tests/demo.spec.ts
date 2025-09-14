@@ -5,7 +5,7 @@ test.describe('Knee Cost Demo', () => {
     await page.goto('/')
     
     // Check main heading
-    await expect(page.locator('h1')).toContainText('Check your knee arthroscopy costs')
+    await expect(page.locator('h1')).toContainText('Check your healthcare costs')
     
     // Check CTA button
     await expect(page.locator('text=Start Estimate')).toBeVisible()
@@ -27,7 +27,7 @@ test.describe('Knee Cost Demo', () => {
     
     // Should be on estimate page
     await expect(page).toHaveURL('/estimate')
-    await expect(page.locator('h1')).toContainText('Get Your Knee Arthroscopy Cost Estimate')
+    await expect(page.locator('h1')).toContainText('Get Your HealthcareCost Estimate')
   })
 
   test('should display estimate form', async ({ page }) => {
